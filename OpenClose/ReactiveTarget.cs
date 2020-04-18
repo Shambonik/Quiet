@@ -18,10 +18,14 @@ public class ReactiveTarget : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    public void setOriginalColor()
+    {
         transform.gameObject.GetComponent<Renderer>().material.color = col;
     }
 
-    
 
     public string React()
     {

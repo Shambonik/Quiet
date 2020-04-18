@@ -9,7 +9,7 @@ public class CameraUpDown : MonoBehaviour
     public int speedRotation = 200;
     float X;
     float Y;
-
+    GameObject lastHit = null;
     string text = "";
 
     void Start()
@@ -23,25 +23,45 @@ public class CameraUpDown : MonoBehaviour
 
     void Update()
     {
+        //transform.gameObject.GetComponent<Renderer>().material.color = col;
         X -= Input.GetAxis("Mouse Y") * Time.deltaTime * speedRotation;
         Y += Input.GetAxis("Mouse X") * Time.deltaTime * speedRotation;
         transform.rotation = Quaternion.Euler(X, Y, 0);
+        GameObject hitObject = null;
         RaycastHit hit;
         if ((Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 20f)))
         {
-            GameObject hitObject = hit.transform.gameObject;
+            hitObject = hit.transform.gameObject;
+            
             ReactiveTarget target = hitObject.GetComponent<ReactiveTarget>();
             if (target != null)
             {
                 text = target.React();
+                if ((lastHit != null) && (lastHit != hitObject))
+                {
+                    lastHit.GetComponent<ReactiveTarget>().setOriginalColor();
+                    lastHit = null;
+                }
+                lastHit = hitObject;
             }
             else
             {
+                if (lastHit != null)
+                {
+                    lastHit.GetComponent<ReactiveTarget>().setOriginalColor();
+                    lastHit = null;
+                }
                 text = "";
             }
         }
         else
         {
+            if (lastHit != null)
+            {
+                lastHit.GetComponent<ReactiveTarget>().setOriginalColor();
+                lastHit = null;
+            }
+            text = "";
             text = "";
         }
     }
