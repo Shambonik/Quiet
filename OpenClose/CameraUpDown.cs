@@ -62,7 +62,6 @@ public class CameraUpDown : MonoBehaviour
                 lastHit = null;
             }
             text = "";
-            text = "";
         }
     }
 
