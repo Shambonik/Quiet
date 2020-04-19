@@ -6,7 +6,7 @@ public class ReactiveTarget : MonoBehaviour
 {
 
     public int ObjectId;
-    public float deltaPostion = 2.5f;
+    public float deltaPosition = 2.5f;
     Transform parent;
     Color col;
     public int opened = 0;
@@ -21,15 +21,18 @@ public class ReactiveTarget : MonoBehaviour
         col = transform.gameObject.GetComponent<Renderer>().material.color;
         angle =transform.eulerAngles.y;
         posClose = transform.localPosition.z;
-        posOpen = posClose + deltaPostion;
+        posOpen = posClose + deltaPosition;
         changePosition = posOpen * opened - (posClose * (opened - 1));
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(transform.eulerAngles.x, angle, transform.eulerAngles.z), 0.01f);
-        transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, changePosition), 1.5f * Time.deltaTime);
+        if ((transform.tag != "WardrobeShake"))
+        {
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(transform.eulerAngles.x, angle, transform.eulerAngles.z), 2f * Time.deltaTime);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x, transform.localPosition.y, changePosition), 2f * Time.deltaTime);
+        }
     }
 
     public void setOriginalColor()
@@ -63,18 +66,28 @@ public class ReactiveTarget : MonoBehaviour
             }
         }
 
-
         if ((transform.tag == "Door") && (Input.GetMouseButtonDown(0)))
         {
             opened = (opened+1)%2;
             angle -= ((ObjectId - 0.5f) * 180) * (opened-0.5f)*2;
+            return ("открыть/закрыть");
         }
+
         if ((transform.tag == "Case") && (Input.GetMouseButtonDown(0)))
         {
             opened = (opened + 1) % 2;
             changePosition = posOpen * opened - (posClose * (opened - 1));
+            return ("открыть/закрыть");
         }
-        return ("открыть/закрыть");
+
+        if ((transform.tag == "WardrobeShake") && (Input.GetMouseButtonDown(0)))
+        {
+            GameObject.Find("Player").GetComponent<PlayerMove1>().enabled = false;
+            GameObject.Find("Camera").GetComponent<CameraUpDown>().enabled = false;
+            parent.GetComponent<Shaking>().enabled = true;
+            return ("трясьти");
+        }
+        return "";
     }
 
 }
